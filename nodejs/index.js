@@ -3,9 +3,17 @@ const mysql2 = require('mysql2')
 
 const PORT = 3000
 
-const app = express()
+const dbConnection = mysql2.createConnection({
+  host: 'db',
+  user: 'root',
+  password: 'veryHard',
+  database: 'nodejs'
+})
 
-let dbConnection = null
+dbConnection.query(`INSERT INTO people(name) VALUES('Fulano_${new Date().toISOString()}')`)
+// dbConnection.end()
+
+const app = express()
 
 app.get('/', (req, res) => {
 
@@ -24,14 +32,4 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, async () => {
   console.log(`App listening on port ${PORT} ...`)
-
-  dbConnection = mysql2.createConnection({
-    host: 'db',
-    user: 'root',
-    password: 'veryHard',
-    database: 'nodejs'
-  })
-
-  dbConnection.query(`INSERT INTO people(name) VALUES('Fulano_${new Date().toISOString()}')`)
-  // dbConnection.end()
 })
