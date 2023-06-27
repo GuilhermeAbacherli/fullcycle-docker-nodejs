@@ -18,7 +18,7 @@ const app = express()
 app.get('/', (req, res) => {
 
   dbConnection.query(`SELECT * FROM people`, (err, results, fields) => {
-    title = `<h1>Full Cycle</h1>`
+    title = `<h1>Full Cycle Rocks!</h1>`
     description = `<h3>Lista de nomes cadastrada no banco de dados:</h3>`
 
     namesList = ''
