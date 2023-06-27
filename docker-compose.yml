@@ -1,0 +1,53 @@
+version: '2.1'
+
+services:
+
+  db:
+    container_name: db
+    image: mysql:8.0.33
+    command: "--innodb-use-native-aio=0"
+    tty: true
+    environment:
+      - MYSQL_DATABASE=nodejs
+      - MYSQL_ROOT_PASSWORD=veryHard
+    networks:
+      - nodejsNetwork
+    expose:
+      - 3306
+    volumes:
+      - "./scripts/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./data:/var/lib/mysql"
+    healthcheck:
+      # https://docs.docker.com/engine/reference/builder/#healthcheck
+      test:
+        [
+          "CMD-SHELL",
+          "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD"
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  nodejs:
+    container_name: nodejs
+    build: ./nodejs
+    networks:
+      - nodejsNetwork
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    networks:
+      - nodejsNetwork
+    ports:
+      - 8080:80
+    depends_on:
+      nodejs:
+        condition: service_started
+
+networks:
+  nodejsNetwork:
+    driver: bridge
