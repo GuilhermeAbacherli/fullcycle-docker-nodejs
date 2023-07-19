@@ -19,11 +19,7 @@ services:
       - "./data:/var/lib/mysql"
     healthcheck:
       # https://docs.docker.com/engine/reference/builder/#healthcheck
-      test:
-        [
-          "CMD-SHELL",
-          "exit | mysql -h localhost -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD"
-        ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
       interval: 5s
       timeout: 10s
       retries: 20
